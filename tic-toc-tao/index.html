@@ -1,1 +1,270 @@
 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta name="charset" content="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+     :root {
+       --bg: #0d1117;
+       --card: #161b22;
+       --border: #30363d;
+       --text: #c9d1d9;
+       --muted: #8b949e;
+       --accent: #58a6ff;
+       --radius: 14px;
+   }
+
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+   }
+
+   body {
+     background-color: var(--bg);
+     color: var(--text);
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     flex-direction: column;
+     gap: 2px;
+   }
+
+   .board {
+       width: 302px;
+       height: 405px;
+       display: grid;
+       grid-template-rows: repeat(3, 1fr);
+       grid-template-columns: repeat(3, 1fr);
+       grid-template-areas:
+         "top-right top-middle top-left"
+         "middle-right  middle-middle middle-left"
+         "bottom-right  bottom-middle bottom-left";
+       margin-bottom: 20px;
+}
+
+   .board {
+      place-items: center;
+      margin-top: 4rem;
+}
+   #middle-left {
+     border-left: 5px solid var(--border);
+}
+
+   #middle-right {
+     border-right: 5px solid var(--border);
+}
+
+    #top-left {
+     border-left: 5px solid var(--border);
+}
+
+   #top-right {
+     border-right: 5px solid var(--border);
+}
+
+  #bottom-left {
+     border-left: 5px solid var(--border);
+}
+
+  #bottom-right {
+     border-right: 5px solid var(--border);
+}
+
+   #middle-right, #middle-middle, #middle-left {
+      border-bottom: 5px solid var(--border);
+      width: 100px;
+      height: 135px;
+}
+    #top-right, #top-middle, #top-left {
+      border-bottom: 5px solid var(--border);
+      width: 100px;
+      height: 135px;
+}
+
+    #bottom-right, #bottom-middle, #bottom-left {
+      width: 100px;
+      height: 135px;
+}
+
+    #top-middle {
+      grid-area: top-middle;
+}
+
+    #top-right {
+     grid-area: top-right;
+}
+
+    #top-left {
+     grid-area: top-left;
+}
+
+   #middle-left {
+    grid-area: middle-left;
+}
+   #middle-middle {
+    grid-area: middle-middle;
+}
+
+  #middle-right {
+    grid-area: middle-right;
+}
+
+  #bottom-left {
+    grid-area: bottom-left;
+}
+
+  #bottom-middle {
+    grid-area: bottom-middle;
+}
+
+  #bottom-right {
+    grid-area: bottom-right;
+}
+
+  .row {
+    color: var(--text);
+    font-size: 6em;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--card);
+    border: var(--border);
+}
+
+   #display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+   .player, .turn-msg, #round {
+    font-style: italic;
+}
+
+  #select-turn {
+    margin-top: 30px;
+    margin-left: 17px;
+    background-color: var(--accent);
+    font-size: 18px;
+}
+
+  #select-turn {
+    width: 150px;
+    height: 25px;
+    border-radius: var(--radius);
+    color: var(--bg);
+    display: inline-flex;
+    align-items;
+    justify-content: center;
+}
+
+  #starter-turn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-right: 4px;
+}
+
+ .turn {
+   margin-top: 30px;
+   margin-left: 15px;
+   width: 50px;
+   height: 20px;
+   border: 1px solid var(--border);
+   border-radius: var(--radius);
+   text-align: center;
+   color: var(--text)
+}
+ .player {
+    color: var(--text);
+}
+  </style>
+</head>
+<body>
+  <div id="display">
+    <p id="st-place" class="player">player  (X) Score: <span class="score" id="st-score">0</span></p>
+    <p id="nd-place" class="player">player (O) Score:  <span class="score" id="nd-score">0</span></p>
+    <p id="round">Round: 0</p>
+  </div>
+
+  <div class="board">
+    <button class="row" id="top-right"></button>
+    <button class="row" id="top-middle"></button>
+    <button class="row" id="top-left"></button>
+
+
+    <button class="row" id="middle-right"></button>
+    <button class="row" id="middle-middle"></button>
+    <button class="row" id="middle-left"></button>
+
+    <button class="row" id="bottom-right"></button>
+    <button class="row" id="bottom-middle"></button>
+    <button class="row" id="bottom-left"></button>
+  </div>
+
+    <div id="starter-turn">
+      <div  class="turn" id="x-turn">X</div>
+      <div  class="turn" id="o-turn">O</div>
+    </div>
+</body>
+<script>
+  const rowsBtn = document.querySelectorAll(".row");
+  const xTurnBtn = document.getElementById("x-turn");
+  const oTurnBtn = document.getElementById("o-turn");
+  const xFont = document.getElementById("st-place");
+  const oFont = document.getElementById("nd-place");
+
+  let turnState = null;
+  let gameStarted = false;
+  let turnType = null;
+
+  function startGame() {
+    if (gameStarted) return;
+    gameStarted = true;
+
+  rowsBtn.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const currentBtn = e.target;
+
+      if (turnState) {
+        currentBtn.textContent = "X";
+        xFont.style.fontWeight = "normal";
+        oFont.style.fontWeight = "bold";
+
+      }
+
+      else {
+        currentBtn.textContent = "O";
+        oFont.style.fontWeight = "normal";
+        xFont.style.fontWeight = "bold";
+      }
+
+      turnState = !turnState;
+      currentBtn.disabled = true;
+    });
+  });
+}
+
+  xTurnBtn.addEventListener("click", () => {
+    turnState = true;
+    xTurnBtn.style.display = "none";
+    oTurnBtn.style.display = "none";
+    xFont.style.fontWeight = "bold";
+    startGame();
+});
+
+  oTurnBtn.addEventListener("click", () => {
+    turnState = false;
+    xTurnBtn.style.display = "none";
+    oTurnBtn.style.display = "none";
+    oFont.style.fontWeight = "bold";
+    startGame();
+});
+</script>
+
+                                           </html>
